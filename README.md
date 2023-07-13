@@ -1,6 +1,6 @@
-# withlive
+# Withlive
 
-A new Flutter project.
+2023 STA+C 미래산업부문 개발팀 Withlive Frontend
 
 ## Getting Started
 
