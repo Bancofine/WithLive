@@ -1,6 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -40,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
         _cameraController = controller;
       });
     });
-    connectWebSocket(); // 웹 소켓 연결
+    connectWebSocket(); // Connect to WebSocket
   }
 
   @override
@@ -76,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _webSocketChannel = channel;
     });
 
-    // 카메라 프레임을 지정된 간격으로 전송
+    // Send camera frames at a specified interval
     _timer = Timer.periodic(Duration(milliseconds: 10000), (_) {
       if (_cameraController != null && _cameraController!.value.isInitialized) {
         sendCameraFrame();
@@ -88,18 +89,14 @@ class _MyHomePageState extends State<MyHomePage> {
     if (_webSocketChannel == null) return;
 
     try {
-      // 카메라에서 현재 프레임 가져오기
+      // Capture the current frame from the camera
       final cameraImage = await _cameraController!.takePicture();
 
-      // 이미지 데이터를 Uint8List로 변환
-      final imageBytes = await cameraImage.readAsBytes();
-      final imageUint8List = Uint8List.fromList(imageBytes);
+      // Convert image data to base64
+      final encodedImage = base64Encode(await cameraImage.readAsBytes());
 
-      // 이미지 데이터 압축 및 리사이징
-      final compressedImage = compressAndResizeImage(imageUint8List);
-
-      // 이미지 데이터 웹 소켓으로 전송
-      _webSocketChannel!.sink.add(compressedImage);
+      // Send the base64 encoded image data over WebSocket
+      _webSocketChannel!.sink.add(encodedImage);
     } catch (e) {
       print('Failed to send camera frame: $e');
     }
@@ -108,10 +105,14 @@ class _MyHomePageState extends State<MyHomePage> {
   Uint8List compressAndResizeImage(Uint8List imageBytes) {
     final image = img.decodeImage(imageBytes);
 
-    // 이미지 압축
-    final compressedImage = img.encodeJpg(image!, quality: 80);
+    if (image == null) {
+      throw Exception('Failed to decode image');
+    }
 
-    // 이미지 리사이징
+    // Compress the image
+    final compressedImage = img.encodeJpg(image as img.Image, quality: 80);
+
+    // Resize the image
     final resizedImage =
         img.copyResize(compressedImage as img.Image, width: 800);
 
@@ -127,10 +128,10 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text('wihlife'),
           leading: const Icon(Icons.menu),
           actions: <Widget>[
-            new IconButton(
-              icon: new Icon(Icons.settings),
+            IconButton(
+              icon: Icon(Icons.settings),
               tooltip: '설정',
-              onPressed: () => {},
+              onPressed: () {},
             ),
           ],
           backgroundColor: Colors.white,
@@ -169,7 +170,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    // 버튼이 눌렸을 때의 동작 처리
+                    // Handle button press
                   },
                   child: Text('큰 버튼'),
                   style: ButtonStyle(
