@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages, library_private_types_in_public_api
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -8,17 +10,21 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Withlive',
       theme: ThemeData(primarySwatch: Colors.grey),
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
