@@ -2,7 +2,6 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -110,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     // Compress the image
-    final compressedImage = img.encodeJpg(image as img.Image, quality: 80);
+    final compressedImage = img.encodeJpg(image, quality: 80);
 
     // Resize the image
     final resizedImage =
@@ -123,13 +122,13 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(70.0),
+        preferredSize: const Size.fromHeight(70.0),
         child: AppBar(
-          title: Text('Withlive'),
+          title: const Text('Withlive'),
           leading: const Icon(Icons.menu),
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.settings),
+              icon: const Icon(Icons.settings),
               tooltip: '설정',
               onPressed: () {},
             ),
@@ -142,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
           TextField(
             decoration: InputDecoration(
               hintText: '',
-              prefixIcon: Icon(Icons.search),
+              prefixIcon: const Icon(Icons.search),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
@@ -172,12 +171,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   onPressed: () {
                     // Handle button press
                   },
-                  child: Text('큰 버튼'),
                   style: ButtonStyle(
                     fixedSize: MaterialStateProperty.all<Size>(
-                      Size(350.0, 330.0),
+                      const Size(350.0, 330.0),
                     ),
                   ),
+                  child: const Text('큰 버튼'),
                 ),
               ),
             ),
