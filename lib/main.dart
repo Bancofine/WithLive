@@ -125,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(70.0),
         child: AppBar(
-          title: Text('wihlife'),
+          title: Text('Withlive'),
           leading: const Icon(Icons.menu),
           actions: <Widget>[
             IconButton(
