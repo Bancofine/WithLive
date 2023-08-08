@@ -1,13 +1,9 @@
-// ignore_for_file: depend_on_referenced_packages
-
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:image/image.dart' as img;
 
 void main() => runApp(MyApp());
 
@@ -15,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'wihlife',
+      title: 'Withlive',
       theme: ThemeData(primarySwatch: Colors.grey),
       home: MyHomePage(),
     );
@@ -31,6 +27,142 @@ class _MyHomePageState extends State<MyHomePage> {
   CameraController? _cameraController;
   WebSocketChannel? _webSocketChannel;
   Timer? _timer;
+  final List<String> labelList = [
+    "person",
+    "bicycle",
+    "car",
+    "motorcycle",
+    "airplane",
+    "bus",
+    "train",
+    "truck",
+    "boat",
+    "traffic light",
+    "fire hydrant",
+    "stop sign",
+    "parking meter",
+    "bench",
+    "bird",
+    "cat",
+    "dog",
+    "horse",
+    "sheep",
+    "cow",
+    "elephant",
+    "bear",
+    "zebra",
+    "giraffe",
+    "backpack",
+    "umbrella",
+    "handbag",
+    "tie",
+    "suitcase",
+    "frisbee",
+    "skis",
+    "snowboard",
+    "sports ball",
+    "kite",
+    "baseball bat",
+    "baseball glove",
+    "skateboard",
+    "surfboard",
+    "tennis racket",
+    "bottle",
+    "wine glass",
+    "cup",
+    "fork",
+    "knife",
+    "spoon",
+    "bowl",
+    "banana",
+    "apple",
+    "sandwich",
+    "orange",
+    "broccoli",
+    "carrot",
+    "hot dog",
+    "pizza",
+    "donut",
+    "cake",
+    "chair",
+    "couch",
+    "potted plant",
+    "bed",
+    "dining table",
+    "toilet",
+    "tv",
+    "laptop",
+    "mouse",
+    "remote",
+    "keyboard",
+    "cell phone",
+    "microwave",
+    "oven",
+    "toaster",
+    "sink",
+    "refrigerator",
+    "book",
+    "clock",
+    "vase",
+    "scissors",
+    "teddy bear",
+    "hair drier",
+    "toothbrush",
+    "tree",
+    "pole",
+    "fence",
+    "utility_pole",
+    "bollard",
+    "flower_bed",
+    "bus_stop",
+    "traffic_cone",
+    "kickboard",
+    "streetlamp",
+    "telephone_booth",
+    "trash",
+    "fire_plug",
+    "plant",
+    "sign_board",
+    "corner",
+    "opened_door",
+    "mailbox",
+    "unknown",
+    "banner"
+  ];
+
+  final List<String> labelList1 = [
+    'tree',
+    'car',
+    'person',
+    'pole',
+    'fence',
+    'utility_pole',
+    'bollard',
+    'bicycle',
+    'motorcycle',
+    'flower_bed',
+    'dog',
+    'bus_stop',
+    'traffic_cone',
+    'truck',
+    'bench',
+    'bus',
+    'kickboard',
+    'streetlamp',
+    'telephone_booth',
+    'trash',
+    'fire_plug',
+    'plant',
+    'sign_board',
+    'fire_hydrant',
+    'corner',
+    'opened_door',
+    'mailbox',
+    'unknown',
+    'banner'
+  ];
+
+  List<Map<String, dynamic>> _boundingBoxes = [];
 
   @override
   void initState() {
@@ -76,8 +208,24 @@ class _MyHomePageState extends State<MyHomePage> {
       _webSocketChannel = channel;
     });
 
+    // Listen for received data and reconnect if necessary
+    _webSocketChannel!.stream.listen((data) {
+      setState(() {
+        try {
+          List<dynamic> jsonData = jsonDecode(data);
+          _boundingBoxes = jsonData.cast<Map<String, dynamic>>();
+
+          for (var box in _boundingBoxes) {
+            box['label'] = box['label'].toString();
+          }
+        } catch (e) {
+          print('Failed to parse JSON: $e');
+        }
+      });
+    });
+
     // Send camera frames at a specified interval
-    _timer = Timer.periodic(Duration(milliseconds: 10000), (_) {
+    _timer = Timer.periodic(const Duration(milliseconds: 1000), (_) {
       if (_cameraController != null && _cameraController!.value.isInitialized) {
         sendCameraFrame();
       }
@@ -99,23 +247,6 @@ class _MyHomePageState extends State<MyHomePage> {
     } catch (e) {
       print('Failed to send camera frame: $e');
     }
-  }
-
-  Uint8List compressAndResizeImage(Uint8List imageBytes) {
-    final image = img.decodeImage(imageBytes);
-
-    if (image == null) {
-      throw Exception('Failed to decode image');
-    }
-
-    // Compress the image
-    final compressedImage = img.encodeJpg(image, quality: 80);
-
-    // Resize the image
-    final resizedImage =
-        img.copyResize(compressedImage as img.Image, width: 800);
-
-    return resizedImage.getBytes();
   }
 
   @override
@@ -154,30 +285,37 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Center(
                 child: _cameraController != null &&
                         _cameraController!.value.isInitialized
-                    ? AspectRatio(
-                        aspectRatio: _cameraController!.value.aspectRatio,
-                        child: CameraPreview(_cameraController!),
+                    ? Stack(
+                        children: [
+                          CameraPreview(_cameraController!),
+                          for (var boundingBox in _boundingBoxes)
+                            Positioned(
+                              left: boundingBox['xmin'],
+                              top: boundingBox['ymin'],
+                              width: boundingBox['xmax'] - boundingBox['xmin'],
+                              height: boundingBox['ymax'] - boundingBox['ymin'],
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.red,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    labelList[int.parse(boundingBox['label'])],
+                                    style: const TextStyle(
+                                      color: Colors.red,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 25,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
                       )
                     : Container(),
-              ),
-            ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Container(
-              color: Colors.white,
-              child: Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Handle button press
-                  },
-                  style: ButtonStyle(
-                    fixedSize: MaterialStateProperty.all<Size>(
-                      const Size(350.0, 330.0),
-                    ),
-                  ),
-                  child: const Text('큰 버튼'),
-                ),
               ),
             ),
           ),
