@@ -8,7 +8,7 @@ class setting extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('개인정보 처리고지'),
+        title: Text('개인정보 처리'),
         backgroundColor: Colors.white,
       ),
       body: InAppWebView(
