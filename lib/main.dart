@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:withlive/setting.dart';
 
 void main() => runApp(MyApp());
 
@@ -258,32 +259,24 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(70.0),
-        child: AppBar(
-          title: const Text('Withlive'),
-          leading: const Icon(Icons.menu),
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.settings),
-              tooltip: '설정',
-              onPressed: () {},
-            ),
-          ],
-          backgroundColor: Colors.white,
-        ),
+      appBar: AppBar(
+        title: const Text('Withlive'),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: '설정',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => setting()),
+              );
+            },
+          ),
+        ],
+        backgroundColor: Colors.white,
       ),
       body: Column(
         children: [
-          TextField(
-            decoration: InputDecoration(
-              hintText: '',
-              prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-            ),
-          ),
           Expanded(
             flex: 1,
             child: Container(
