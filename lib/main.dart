@@ -264,7 +264,6 @@ class _MyHomePageState extends State<MyHomePage> {
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.settings),
-            tooltip: '설정',
             onPressed: () {
               Navigator.push(
                 context,
