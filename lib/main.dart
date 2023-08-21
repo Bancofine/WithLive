@@ -286,31 +286,42 @@ class _MyHomePageState extends State<MyHomePage> {
                     ? Stack(
                         children: [
                           CameraPreview(_cameraController!),
-                          for (var boundingBox in _boundingBoxes)
-                            Positioned(
-                              left: boundingBox['xmin'],
-                              top: boundingBox['ymin'],
-                              width: boundingBox['xmax'] - boundingBox['xmin'],
-                              height: boundingBox['ymax'] - boundingBox['ymin'],
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.red,
-                                    width: 2,
-                                  ),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    labelList[int.parse(boundingBox['label'])],
-                                    style: const TextStyle(
+                          Stack(
+                            children: _boundingBoxes.map((boundingBox) {
+                              double left = boundingBox['xmin'];
+                              double top = boundingBox['ymin'];
+                              double width =
+                                  boundingBox['xmax'] - boundingBox['xmin'];
+                              double height =
+                                  boundingBox['ymax'] - boundingBox['ymin'];
+
+                              return Positioned(
+                                left: left,
+                                top: top,
+                                child: Container(
+                                  width: width,
+                                  height: height,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
                                       color: Colors.red,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 25,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      labelList[
+                                          int.parse(boundingBox['label'])],
+                                      style: const TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 25,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ),
+                              );
+                            }).toList(),
+                          ),
                         ],
                       )
                     : Container(),
