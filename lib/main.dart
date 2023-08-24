@@ -194,7 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
     flutterBlue.startScan(timeout: const Duration(seconds: 4));
     flutterBlue.scanResults.listen((results) {
       for (ScanResult result in results) {
-        if (result.device.name == "YourBluetoothDeviceName") {
+        if (result.device.name == "Withlive") {
           _connectToDevice(result.device);
           break;
         }
@@ -205,7 +205,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void _connectToDevice(BluetoothDevice device) async {
     try {
       await device.connect();
-      // 여기에서 연결이 성공한 경우 필요한 작업 수행
       print("블루투스 장치 연결 성공: ${device.name}");
     } catch (e) {
       print("연결 실패: $e");
