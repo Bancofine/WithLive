@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:withlive/setting.dart';
+import 'package:flutter_blue/flutter_blue.dart';
 
 void main() => runApp(const MyApp());
 
@@ -171,6 +172,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   List<Map<String, dynamic>> _boundingBoxes = [];
 
+  FlutterBlue flutterBlue = FlutterBlue.instance;
+
   @override
   void initState() {
     super.initState();
@@ -180,14 +183,33 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     });
     connectWebSocket(); // Connect to WebSocket
+    _bluetoothInit(); // Initialize Bluetooth
   }
 
-  @override
-  void dispose() {
-    _cameraController?.dispose();
-    _webSocketChannel?.sink.close();
-    _timer?.cancel();
-    super.dispose();
+  void _bluetoothInit() {
+    _startScan();
+  }
+
+  void _startScan() {
+    flutterBlue.startScan(timeout: const Duration(seconds: 4));
+    flutterBlue.scanResults.listen((results) {
+      for (ScanResult result in results) {
+        if (result.device.name == "YourBluetoothDeviceName") {
+          _connectToDevice(result.device);
+          break;
+        }
+      }
+    });
+  }
+
+  void _connectToDevice(BluetoothDevice device) async {
+    try {
+      await device.connect();
+      // 여기에서 연결이 성공한 경우 필요한 작업 수행
+      print("블루투스 장치 연결 성공: ${device.name}");
+    } catch (e) {
+      print("연결 실패: $e");
+    }
   }
 
   Future<CameraController> initializeCamera() async {
@@ -254,6 +276,14 @@ class _MyHomePageState extends State<MyHomePage> {
     } catch (e) {
       print('Failed to send camera frame: $e');
     }
+  }
+
+  @override
+  void dispose() {
+    _cameraController?.dispose();
+    _webSocketChannel?.sink.close();
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override
