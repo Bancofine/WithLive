@@ -230,6 +230,10 @@ class _MyHomePageState extends State<MyHomePage> {
     return cameraController;
   }
 
+  void sendBLEData(position) async {
+    print(position);
+  }
+
   void connectWebSocket() {
     final channel = WebSocketChannel.connect(Uri.parse('ws://wsuk.dev:20000'));
     setState(() {
@@ -245,6 +249,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
           for (var box in _boundingBoxes) {
             box['label'] = box['label'].toString();
+            sendBLEData(box['position']);
           }
         } catch (e) {
           print('Failed to parse JSON: $e');
@@ -317,28 +322,28 @@ class _MyHomePageState extends State<MyHomePage> {
                     ? Stack(
                         children: [
                           CameraPreview(_cameraController!),
-                          for (var boundingBox in _boundingBoxes)
+                          for (var box in _boundingBoxes)
                             Positioned(
-                              left: boundingBox['left'] * width,
-                              top: boundingBox['top'] *
+                              left: box['left'] * width,
+                              top: box['top'] *
                                   (height - AppBar().preferredSize.height),
-                              width: boundingBox['width'] * width,
-                              height: boundingBox['height'] *
+                              width: box['width'] * width,
+                              height: box['height'] *
                                   (height - AppBar().preferredSize.height),
                               child: Container(
                                 decoration: BoxDecoration(
                                   border: Border.all(
-                                    color: Colors.red,
+                                    color: Colors.blue,
                                     width: 2,
                                   ),
                                 ),
                                 child: Center(
                                   child: Text(
-                                    labelList[int.parse(boundingBox['label'])],
+                                    labelList[int.parse(box['label'])],
                                     style: const TextStyle(
-                                      color: Colors.red,
+                                      color: Colors.black,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: 25,
+                                      fontSize: 15,
                                     ),
                                   ),
                                 ),
