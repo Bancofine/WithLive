@@ -258,6 +258,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+    final height = MediaQuery.of(context).size.height;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Withlive'),
@@ -288,10 +290,12 @@ class _MyHomePageState extends State<MyHomePage> {
                           CameraPreview(_cameraController!),
                           for (var boundingBox in _boundingBoxes)
                             Positioned(
-                              left: boundingBox['xmin'],
-                              top: boundingBox['ymin'],
-                              width: boundingBox['xmax'] - boundingBox['xmin'],
-                              height: boundingBox['ymax'] - boundingBox['ymin'],
+                              left: boundingBox['left'] * width,
+                              top: boundingBox['top'] *
+                                  (height - AppBar().preferredSize.height),
+                              width: boundingBox['width'] * width,
+                              height: boundingBox['height'] *
+                                  (height - AppBar().preferredSize.height),
                               child: Container(
                                 decoration: BoxDecoration(
                                   border: Border.all(
