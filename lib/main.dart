@@ -176,7 +176,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   FlutterBlue flutterBlue = FlutterBlue.instance;
 
-  BluetoothCharacteristic? _yourCharacteristic;
+  BluetoothCharacteristic? _myCharacteristic;
 
   BluetoothDevice? _connectedBluetoothDevice;
 
@@ -232,7 +232,7 @@ class _MyHomePageState extends State<MyHomePage> {
         for (BluetoothCharacteristic characteristic
             in service.characteristics) {
           setState(() {
-            _yourCharacteristic = characteristic;
+            _myCharacteristic = characteristic;
           });
           print("찾은 특성: ${characteristic.uuid}");
         }
@@ -278,7 +278,7 @@ class _MyHomePageState extends State<MyHomePage> {
             box['label'] = box['label'].toString();
             box['position'] = box['position'].toString();
 
-            _yourCharacteristic!.write(utf8.encode(box['position']));
+            _myCharacteristic!.write(utf8.encode(box['position']));
             print(box['position']);
           }
         } catch (e) {
