@@ -2,6 +2,8 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
@@ -174,6 +176,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   FlutterBlue flutterBlue = FlutterBlue.instance;
 
+  BluetoothCharacteristic? _yourCharacteristic;
+
+  BluetoothDevice? _connectedBluetoothDevice;
+
   @override
   void initState() {
     super.initState();
@@ -206,8 +212,33 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       await device.connect();
       print("블루투스 장치 연결 성공: ${device.name}");
+
+      setState(() {
+        _connectedBluetoothDevice = device;
+      });
+
+      await _discoverServicesAndCharacteristics(device);
     } catch (e) {
       print("연결 실패: $e");
+    }
+  }
+
+  Future<void> _discoverServicesAndCharacteristics(
+      BluetoothDevice device) async {
+    try {
+      List<BluetoothService> services = await device.discoverServices();
+
+      for (BluetoothService service in services) {
+        for (BluetoothCharacteristic characteristic
+            in service.characteristics) {
+          setState(() {
+            _yourCharacteristic = characteristic;
+          });
+          print("찾은 특성: ${characteristic.uuid}");
+        }
+      }
+    } catch (e) {
+      print("서비스 및 특성 검색 실패: $e");
     }
   }
 
@@ -230,10 +261,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return cameraController;
   }
 
-  void sendBLEData(position) async {
-    print(position);
-  }
-
   void connectWebSocket() {
     final channel = WebSocketChannel.connect(Uri.parse('ws://wsuk.dev:20000'));
     setState(() {
@@ -249,7 +276,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
           for (var box in _boundingBoxes) {
             box['label'] = box['label'].toString();
-            sendBLEData(box['position']);
+            box['position'] = box['position'].toString();
+
+            _yourCharacteristic!.write(utf8.encode(box['position']));
+            print(box['position']);
           }
         } catch (e) {
           print('Failed to parse JSON: $e');
