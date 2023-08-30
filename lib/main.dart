@@ -176,8 +176,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   BluetoothCharacteristic? _myCharacteristic;
 
-  BluetoothDevice? _connectedBluetoothDevice;
-
   @override
   void initState() {
     super.initState();
@@ -210,10 +208,6 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       await device.connect();
       print("블루투스 장치 연결 성공: ${device.name}");
-
-      setState(() {
-        _connectedBluetoothDevice = device;
-      });
 
       await _discoverServicesAndCharacteristics(device);
     } catch (e) {
