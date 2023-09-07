@@ -270,7 +270,7 @@ class _MyHomePageState extends State<MyHomePage> {
             box['label'] = box['label'].toString();
             box['position'] = box['position'].toString();
 
-            _myCharacteristic!.write(utf8.encode(box['position']));
+            _myCharacteristic!.write(box['position']);
             print(box['position']);
           }
         } catch (e) {
