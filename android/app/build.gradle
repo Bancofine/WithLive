@@ -36,6 +36,10 @@ android {
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
+    defaultConfig {
+        minSdkVersion 27
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -49,22 +53,23 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
-    signingConfigs {
-       release {
-           keyAlias keystoreProperties['keyAlias']
-           keyPassword keystoreProperties['keyPassword']
-           storeFile file(keystoreProperties['storeFile'])
-           storePassword keystoreProperties['storePassword']
-       }
-   }
+//    signingConfigs {
+//       release {
+//           keyAlias keystoreProperties['keyAlias']
+//           keyPassword keystoreProperties['keyPassword']
+//           storeFile file(keystoreProperties['storeFile'])
+//           storePassword keystoreProperties['storePassword']
+//       }
+//   }
    buildTypes {
        release {
-           signingConfig signingConfigs.release
+//           signingConfig signingConfigs.release
 
            minifyEnabled true
-            useProguard true
+//            useProguard true
 
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+           signingConfig signingConfigs.debug
        }
    }
 
@@ -76,6 +81,6 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    classpath 'com.android.tools.build:gradle:3.2.0'
+//    classpath 'com.android.tools.build:gradle:3.2.0'
 
 }

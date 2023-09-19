@@ -267,11 +267,18 @@ class _MyHomePageState extends State<MyHomePage> {
           _boundingBoxes = jsonData.cast<Map<String, dynamic>>();
 
           for (var box in _boundingBoxes) {
-            box['label'] = box['label'].toString();
-            box['position'] = box['position'].toString();
+            try {
+              box['label'] = box['label'].toString();
+              box['position'] = box['position'].toString();
+              String position = (box['position']);
 
-            _myCharacteristic!.write(box['position']);
-            print(box['position']);
+              print("Position: $position");
+              if (_myCharacteristic != null) {
+                _myCharacteristic!.write(utf8.encode(position));
+              }
+            } catch (e) {
+              print("BLE Failed: $e");
+            }
           }
         } catch (e) {
           print('Failed to parse JSON: $e');
