@@ -8,6 +8,7 @@ import 'package:camera/camera.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:withlive/setting.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() => runApp(const MyApp());
 
@@ -179,6 +180,14 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    checkPermission().then((value) {
+      if (value) {
+        _init();
+      }
+    });
+  }
+
+  void _init() async {
     initializeCamera().then((controller) {
       setState(() {
         _cameraController = controller;
@@ -186,6 +195,25 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     connectWebSocket(); // Connect to WebSocket
     _bluetoothInit(); // Initialize Bluetooth
+  }
+
+  Future<bool> checkPermission() async {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.camera,
+      Permission.microphone,
+      Permission.locationWhenInUse,
+      Permission.bluetooth
+    ].request();
+
+    bool per = true;
+
+    statuses.forEach((permission, permissionStatus) {
+      if (!permissionStatus.isGranted) {
+        per = false;
+      }
+    });
+
+    return per;
   }
 
   void _bluetoothInit() {
