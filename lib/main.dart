@@ -191,6 +191,7 @@ class _MyHomePageState extends State<MyHomePage> {
     initializeCamera().then((controller) {
       setState(() {
         _cameraController = controller;
+        _cameraController!.setFlashMode(FlashMode.off);
       });
     });
     connectWebSocket(); // Connect to WebSocket
