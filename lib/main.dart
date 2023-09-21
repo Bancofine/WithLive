@@ -202,8 +202,10 @@ class _MyHomePageState extends State<MyHomePage> {
     Map<Permission, PermissionStatus> statuses = await [
       Permission.camera,
       Permission.microphone,
-      Permission.locationWhenInUse,
-      Permission.bluetooth
+      Permission.location,
+      Permission.bluetooth,
+      Permission.bluetoothConnect,
+      Permission.bluetoothScan
     ].request();
 
     bool per = true;
@@ -225,6 +227,7 @@ class _MyHomePageState extends State<MyHomePage> {
     flutterBlue.startScan(timeout: const Duration(seconds: 4));
     flutterBlue.scanResults.listen((results) {
       for (ScanResult result in results) {
+        print("Bluetooth Name: ${result}");
         if (result.device.name == "Withlive") {
           _connectToDevice(result.device);
           break;
@@ -299,11 +302,14 @@ class _MyHomePageState extends State<MyHomePage> {
             try {
               box['label'] = box['label'].toString();
               box['position'] = box['position'].toString();
+              box['power'] = box['power'].toString();
               String position = (box['position']);
+              String power = (box['power']);
+              String send = "${position}/${power}\n";
 
-              print("Position: $position");
+              print("Send: $send");
               if (_myCharacteristic != null) {
-                _myCharacteristic!.write(utf8.encode(position));
+                _myCharacteristic!.write(utf8.encode(send));
               }
             } catch (e) {
               print("BLE Failed: $e");
