@@ -9,6 +9,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:withlive/setting.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 void main() => runApp(const MyApp());
 
@@ -177,6 +178,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   BluetoothCharacteristic? _myCharacteristic;
 
+  final FlutterTts tts = FlutterTts();
+
   @override
   void initState() {
     super.initState();
@@ -196,6 +199,8 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     connectWebSocket(); // Connect to WebSocket
     _bluetoothInit(); // Initialize Bluetooth
+    tts.setLanguage("en-US"); // Set TTS Language
+    tts.setSpeechRate(0.8); // Set TTS Speed
   }
 
   Future<bool> checkPermission() async {
@@ -300,6 +305,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
           for (var box in _boundingBoxes) {
             try {
+              // TTS
+              tts.speak(labelList[box['label']]);
+
               box['label'] = box['label'].toString();
               box['position'] = box['position'].toString();
               box['power'] = box['power'].toString();
